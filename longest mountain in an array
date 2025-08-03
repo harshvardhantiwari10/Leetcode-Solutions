@@ -1,0 +1,41 @@
+class Solution(object):
+    def longestMountain(self, arr):
+        """
+        :type arr: List[int]
+        :rtype: int
+        """
+        n = len(arr)
+        if n < 3:
+            return 0
+
+        maxLength = 0
+        base = 0
+        while base < n:
+            # The end of the mountain will be where the base of the next one starts
+            end = base
+            
+            # 1. Find the uphill part
+            if end + 1 < n and arr[end] < arr[end + 1]:
+                # Move 'end' to the peak
+                while end + 1 < n and arr[end] < arr[end + 1]:
+                    end += 1
+
+                # 2. Check if there's a downhill part from the peak
+                if end + 1 < n and arr[end] > arr[end + 1]:
+                    # Move 'end' to the end of the mountain
+                    while end + 1 < n and arr[end] > arr[end + 1]:
+                        end += 1
+                    
+                    # 3. We found a valid mountain, update maxLength
+                    # The length is from the 'end' of this mountain to its 'base'
+                    maxLength = max(maxLength, end - base + 1)
+            
+            # Move base to the end of the processed section
+            # If no mountain was found, end is still equal to base, so we move by one.
+            # If a mountain was found, end is at its end, so we start the next search from there.
+            if end == base:
+                base += 1
+            else:
+                base = end
+                
+        return maxLength
