@@ -1,0 +1,45 @@
+class Solution(object):
+    def sumAndMultiply(self, s, queries):
+        """
+        :type s: str
+        :type queries: List[List[int]]
+        :rtype: List[int]
+        """
+        MOD = 10**9 + 7
+        n = len(s)
+        
+        non_zero_digits = []
+        indices = []
+        for i, char in enumerate(s):
+            if char != '0':
+                non_zero_digits.append(int(char))
+                indices.append(i)
+        
+        m = len(non_zero_digits)
+        prefix_sum = [0] * (m + 1)
+        prefix_val = [0] * (m + 1)
+        pow10 = [1] * (m + 1)
+        
+        for i in range(m):
+            prefix_sum[i + 1] = (prefix_sum[i] + non_zero_digits[i]) % MOD
+            prefix_val[i + 1] = (prefix_val[i] * 10 + non_zero_digits[i]) % MOD
+            pow10[i + 1] = (pow10[i] * 10) % MOD
+            
+        import bisect
+        
+        results = []
+        for l, r in queries:
+            start = bisect.bisect_left(indices, l)
+            end = bisect.bisect_right(indices, r)
+            
+            if start >= end:
+                results.append(0)
+                continue
+            
+            count = end - start
+            val = (prefix_val[end] - prefix_val[start] * pow10[count]) % MOD
+            s_val = (prefix_sum[end] - prefix_sum[start]) % MOD
+            
+            results.append((val * s_val) % MOD)
+            
+        return results
